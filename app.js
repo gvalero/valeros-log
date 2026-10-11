@@ -327,5 +327,8 @@ form.addEventListener("submit", save);
 setNow();
 initAuth().catch((error) => {
   console.error(error);
+  Object.keys(localStorage).filter((k) => k.startsWith("msal.")).forEach((k) => localStorage.removeItem(k));
+  history.replaceState(null, "", location.pathname);
+  $("#gate-text").textContent = `Sign-in didn't finish (${error.errorCode || error.message}). Tap the button to try again.`;
   show("gate");
 });
