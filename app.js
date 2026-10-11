@@ -90,7 +90,9 @@ async function graph(path, options = {}) {
   return response;
 }
 
-const itemPath = () => `/drives/${fileRef.driveId}/items/${fileRef.itemId}`;
+// Link recipients must go through /shares; their account has no rights on the owner's drive path.
+const itemPath = () =>
+  fileRef.shareId ? `/shares/${fileRef.shareId}/driveItem` : `/drives/${fileRef.driveId}/items/${fileRef.itemId}`;
 
 function parseLog(text) {
   if (!text.trim()) return [];
