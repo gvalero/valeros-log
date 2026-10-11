@@ -111,8 +111,8 @@ function serialize(list) {
   return JSON.stringify({ schemaVersion: SCHEMA_VERSION, updatedAt: new Date().toISOString(), entries: list }, null, 2);
 }
 
-function rememberRef(item) {
-  fileRef = { driveId: item.parentReference.driveId, itemId: item.id };
+function rememberRef(item, shareId) {
+  fileRef = { driveId: item.parentReference.driveId, itemId: item.id, shareId };
   localStorage.setItem(REF_KEY, JSON.stringify(fileRef));
 }
 
@@ -128,6 +128,16 @@ async function start() {
       rememberRef(await (await graph(`/me/drive/root:/${FILE_PATH}`)).json());
     } catch (error) {
       if (error.status !== 404) console.error(error);
+    }
+  }
+  if (!fileRef) {
+    try {
+      // A log shared directly with this account shows up here, so no link is needed.
+      const shared = (await (await graph("/me/drive/sharedWithMe")).json()).value || [];
+      const found = shared.find((item) => item.name === "valeros-log.json" && item.remoteItem?.parentReference?.driveId);
+      if (found) rememberRef(found.remoteItem);
+    } catch (error) {
+      console.error(error);
     }
   }
   if (!fileRef) return show("setup");
@@ -160,11 +170,22 @@ async function connectByLink(event) {
   if (!link) return;
   const encoded = "u!" + btoa(link).replace(/=+$/, "").replace(/\//g, "_").replace(/\+/g, "-");
   try {
-    rememberRef(await (await graph(`/shares/${encoded}/driveItem`)).json());
+    const item = await (await graph(`/shares/${encoded}/driveItem`)).json();
+    rememberRef(item, encoded);
+    // Prove she can write before trusting the link.
+    const meta = await (await graph(itemPath())).json();
+    const text = await (await graph(`${itemPath()}/content`)).text();
+    await graph(`${itemPath()}/content`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "If-Match": meta.eTag },
+      body: text,
+    });
     show("app");
     await refresh();
-  } catch {
-    say($("#setup-message"), "Couldn't open that link. Check it's the log's share link and allows editing.", true);
+  } catch (error) {
+    localStorage.removeItem(REF_KEY);
+    fileRef = null;
+    say($("#setup-message"), `Couldn't open that link (Microsoft said ${error.status || error.message}). Check it's the log's share link and allows editing.`, true);
   }
 }
 
