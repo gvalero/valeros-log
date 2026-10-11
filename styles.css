@@ -45,7 +45,9 @@ legend { font-weight: 650; margin-bottom: .4rem; padding: 0; }
 .chips input:focus-visible + span { outline: 3px solid var(--clay); outline-offset: 2px; }
 label { display: block; font-weight: 600; margin-bottom: .75rem; }
 .optional { font-weight: 400; color: var(--muted); }
-textarea, input[type="datetime-local"], input[type="url"] {
+.other-text { margin-top: .6rem; }
+.other-text[hidden] { display: none; }
+textarea, input[type="datetime-local"], input[type="url"], input.other-text {
   display: block; width: 100%; margin-top: .3rem; padding: .7rem; font: inherit; font-weight: 400;
   border: 2px solid var(--line); border-radius: .75rem; background: #fff; color: var(--ink);
 }

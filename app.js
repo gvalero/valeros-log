@@ -226,8 +226,27 @@ async function refresh() {
 const DURATION_LABELS = { 5: "under 10 min", 20: "10–30 min", 45: "30–60 min", 75: "60+ min" };
 
 function checked(group) {
-  return [...form.querySelectorAll(`[data-group="${group}"] input:checked`)].map((input) => input.value);
+  const other = form.querySelector(`[data-other="${group}"]`)?.value.trim() || "Other";
+  return [...form.querySelectorAll(`[data-group="${group}"] input:checked`)].map((input) =>
+    input.value === "__other" ? other : input.value,
+  );
 }
+
+function syncOtherFields() {
+  for (const field of form.querySelectorAll("[data-other]")) {
+    const on = form.querySelector(`[data-group="${field.dataset.other}"] input[value="__other"]`).checked;
+    field.hidden = !on;
+    if (!on) field.value = "";
+  }
+}
+
+form.addEventListener("change", (event) => {
+  syncOtherFields();
+  if (event.target.value === "__other" && event.target.checked) {
+    form.querySelector(`[data-other="${event.target.closest("[data-group]").dataset.group}"]`).focus();
+  }
+});
+form.addEventListener("reset", () => setTimeout(syncOtherFields));
 
 function buildEntry() {
   const data = new FormData(form);

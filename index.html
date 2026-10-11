@@ -49,7 +49,9 @@
                 <label><input type="checkbox" value="Kicking" /><span>Kicking</span></label>
                 <label><input type="checkbox" value="Throwing things" /><span>Throwing</span></label>
                 <label><input type="checkbox" value="Hurting himself" /><span>Hurting himself</span></label>
+                <label><input type="checkbox" value="__other" /><span>Other</span></label>
               </div>
+              <input type="text" class="other-text" data-other="behaviours" maxlength="120" placeholder="What else was happening?" hidden />
             </fieldset>
             <fieldset>
               <legend>What set it off?</legend>
@@ -61,7 +63,9 @@
                 <label><input type="checkbox" value="Hungry" /><span>Hungry</span></label>
                 <label><input type="checkbox" value="Brother" /><span>Brother</span></label>
                 <label><input type="checkbox" value="Unknown" /><span>No idea</span></label>
+                <label><input type="checkbox" value="__other" /><span>Other</span></label>
               </div>
+              <input type="text" class="other-text" data-other="triggers" maxlength="120" placeholder="What set it off?" hidden />
             </fieldset>
             <fieldset>
               <legend>How long?</legend>
@@ -81,14 +85,18 @@
                 <label><input type="checkbox" value="Soft toy / music" /><span>Toy / music</span></label>
                 <label><input type="checkbox" value="Swapped adults" /><span>Swapped adults</span></label>
                 <label><input type="checkbox" value="Nothing yet" /><span>Nothing</span></label>
+                <label><input type="checkbox" value="__other" /><span>Other</span></label>
               </div>
+              <input type="text" class="other-text" data-other="helped" maxlength="120" placeholder="What helped?" hidden />
             </fieldset>
             <fieldset>
               <legend>Who's logging?</legend>
               <div class="chips" data-group="who">
                 <label><input type="radio" name="who" value="Dad" /><span>Dad</span></label>
                 <label><input type="radio" name="who" value="Mum" /><span>Mum</span></label>
+                <label><input type="radio" name="who" value="__other" /><span>Other</span></label>
               </div>
+              <input type="text" class="other-text" data-other="who" maxlength="120" placeholder="Who?" hidden />
             </fieldset>
             <label class="note">Anything else? <span class="optional">(optional)</span>
               <textarea name="note" rows="2" maxlength="800" placeholder="Sleep last night, what we said, what we'd try next time…"></textarea>
