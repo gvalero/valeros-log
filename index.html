@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f6f0" />
+    <meta name="description" content="A quick, calm family log for hard moments." />
+    <title>Valero's log</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="bar">
+      <strong class="brand">Valero's log</strong>
+      <span class="who" id="who" hidden></span>
+      <button class="link" id="sign-out" type="button" hidden>Sign out</button>
+    </header>
+
+    <main>
+      <section class="card gate" id="gate" hidden>
+        <h1>Valero's log</h1>
+        <p id="gate-text">Sign in once with your Microsoft account. Notes are saved to a file in OneDrive that you both share.</p>
+        <button class="big primary" id="sign-in" type="button">Sign in with Microsoft</button>
+      </section>
+
+      <section class="card gate" id="setup" hidden>
+        <h1>Set up the log</h1>
+        <p>No log file yet. Start a new one in your OneDrive, or connect the one your spouse already made.</p>
+        <button class="big primary" id="create-log" type="button">Start a new log</button>
+        <form id="link-form" class="stack">
+          <label>Or paste the share link from your spouse
+            <input id="share-link" type="url" inputmode="url" placeholder="https://1drv.ms/..." />
+          </label>
+          <button class="big" type="submit">Connect to that log</button>
+        </form>
+        <p id="setup-message" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <div id="app" hidden>
+        <section class="card quick" aria-labelledby="quick-title">
+          <h1 id="quick-title">Log it. Tap, tap, save.</h1>
+          <form id="incident-form" novalidate>
+            <fieldset>
+              <legend>What's happening?</legend>
+              <div class="chips" data-group="behaviours">
+                <label><input type="checkbox" value="Screaming / crying" /><span>Screaming</span></label>
+                <label><input type="checkbox" value="Hitting" /><span>Hitting</span></label>
+                <label><input type="checkbox" value="Kicking" /><span>Kicking</span></label>
+                <label><input type="checkbox" value="Throwing things" /><span>Throwing</span></label>
+                <label><input type="checkbox" value="Hurting himself" /><span>Hurting himself</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>What set it off?</legend>
+              <div class="chips" data-group="triggers">
+                <label><input type="checkbox" value="Told no" /><span>Told no</span></label>
+                <label><input type="checkbox" value="Accident / spill" /><span>Accident</span></label>
+                <label><input type="checkbox" value="Change of plan" /><span>Change</span></label>
+                <label><input type="checkbox" value="Tired" /><span>Tired</span></label>
+                <label><input type="checkbox" value="Hungry" /><span>Hungry</span></label>
+                <label><input type="checkbox" value="Brother" /><span>Brother</span></label>
+                <label><input type="checkbox" value="Unknown" /><span>No idea</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>How long?</legend>
+              <div class="chips" data-group="duration">
+                <label><input type="radio" name="duration" value="5" /><span>Under 10 min</span></label>
+                <label><input type="radio" name="duration" value="20" /><span>10–30</span></label>
+                <label><input type="radio" name="duration" value="45" /><span>30–60</span></label>
+                <label><input type="radio" name="duration" value="75" /><span>60+</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>What helped?</legend>
+              <div class="chips" data-group="helped">
+                <label><input type="checkbox" value="Stayed close, few words" /><span>Staying close</span></label>
+                <label><input type="checkbox" value="Space" /><span>Space</span></label>
+                <label><input type="checkbox" value="Cuddle" /><span>Cuddle</span></label>
+                <label><input type="checkbox" value="Soft toy / music" /><span>Toy / music</span></label>
+                <label><input type="checkbox" value="Swapped adults" /><span>Swapped adults</span></label>
+                <label><input type="checkbox" value="Nothing yet" /><span>Nothing</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Who's logging?</legend>
+              <div class="chips" data-group="who">
+                <label><input type="radio" name="who" value="Dad" /><span>Dad</span></label>
+                <label><input type="radio" name="who" value="Mum" /><span>Mum</span></label>
+              </div>
+            </fieldset>
+            <label class="note">Anything else? <span class="optional">(optional)</span>
+              <textarea name="note" rows="2" maxlength="800" placeholder="Sleep last night, what we said, what we'd try next time…"></textarea>
+            </label>
+            <label class="note">Time <span class="optional">(now by default)</span>
+              <input id="occurred-at" name="occurredAt" type="datetime-local" />
+            </label>
+            <button class="big primary save" id="save-entry" type="submit">Save</button>
+            <p id="form-message" class="status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <details class="card calm" id="pause">
+          <summary>Need a breath first?</summary>
+          <ol>
+            <li>Plant your feet. Drop your shoulders. Slow, long exhale.</li>
+            <li>Swap out if you can: “Tag, I need a minute.”</li>
+            <li>Say one thing, then be quiet: <strong>“You are very upset. I am here. I will not let you hit.”</strong></li>
+          </ol>
+          <blockquote>“Be still, and know that I am God.” <cite>Psalm 46:10</cite></blockquote>
+          <blockquote>“A soft answer turneth away wrath.” <cite>Proverbs 15:1</cite></blockquote>
+        </details>
+
+        <section class="card" aria-labelledby="recent-title">
+          <div class="row"><h2 id="recent-title">Recent</h2><button class="link" id="refresh" type="button">Refresh</button></div>
+          <p class="muted" id="empty-state">Nothing logged yet.</p>
+          <ol class="entries" id="entry-list"></ol>
+          <p class="muted" id="storage-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="card guide" aria-labelledby="guide-title">
+          <h2 id="guide-title">The plan, in short</h2>
+          <details>
+            <summary>During a tantrum</summary>
+            <ul>
+              <li>Move your older child to his safe spot. Quietly clear throwable things. Stay out of kicking range.</li>
+              <li>Few words: “Angry is okay. Hitting is not.” “I'll stay close. We'll talk when your body is safe.”</li>
+              <li>If breathing is refused: “You don't have to. I'll stay nearby.” Offer one choice once, then stop.</li>
+              <li>Keep a reasonable “no”. Add no new punishment. No lectures or bargaining.</li>
+            </ul>
+          </details>
+          <details>
+            <summary>When he's calm</summary>
+            <ul>
+              <li>“That was a big upset. I love you.” Small repair: wipe up together.</li>
+              <li>Practise “Help me” or “I need space” once. Praise the first safe behaviour.</li>
+              <li>Then back to routine. No long lecture.</li>
+            </ul>
+          </details>
+          <details>
+            <summary>For us, and his brother</summary>
+            <ul>
+              <li>If we lose it: “That was not a safe choice, and I am sorry. Next time I will step back and get help.”</li>
+              <li>To the older child: “That was loud. You did nothing wrong. It's not your job to fix his feelings.”</li>
+              <li>Protect his bedtime. Give him one-to-one time every day.</li>
+            </ul>
+          </details>
+          <details>
+            <summary>When to get help</summary>
+            <ul>
+              <li>Danger to anyone: call 112 / 999.</li>
+              <li>Book the GP or public health nurse. Bring this log. Ask about Parents Plus.</li>
+              <li>Mention promptly: self-injury, injuries to others, episodes at preschool, lost skills.</li>
+            </ul>
+          </details>
+          <details>
+            <summary>More words to return to</summary>
+            <blockquote>“Let every man be swift to hear, slow to speak, slow to wrath.” <cite>James 1:19</cite></blockquote>
+            <blockquote>“Fathers, provoke not your children to anger, lest they be discouraged.” <cite>Colossians 3:21</cite></blockquote>
+            <blockquote>“He that is slow to anger is better than the mighty.” <cite>Proverbs 16:32</cite></blockquote>
+            <blockquote>“Come unto me, all ye that labour and are heavy laden, and I will give you rest.” <cite>Matthew 11:28</cite></blockquote>
+          </details>
+          <p class="muted"><a href="https://1drv.ms/w/c/b44276173f1ac879/IQC3rPygBImeQoA08s58cgVZAQPrab-TeQuwyFqYgyWeOxs?e=OglSPH" target="_blank" rel="noopener">Open the full plan (Word) ↗</a></p>
+          <p class="muted"><button class="link" id="share-log" type="button">Get a link to share this log</button> <span id="share-out"></span></p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
