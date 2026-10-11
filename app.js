@@ -1,5 +1,5 @@
 // Register an app (see README.md) and paste its Application (client) ID here.
-const CLIENT_ID = "";
+const CLIENT_ID = "b72347df-34d5-463d-8718-40af9135a64b";
 
 const SCOPES = ["User.Read", "Files.ReadWrite.All"];
 const GRAPH = "https://graph.microsoft.com/v1.0";
